@@ -49,7 +49,7 @@ export interface EventsPayload {
   events: NormalizedEvent[];
   fetchedAt: string;
   sheetStatus: {
-    tradeShows: { ok: boolean; rows: number; error?: string };
-    techEvents: { ok: boolean; rows: number; error?: string };
+    tradeShows: { ok: boolean; rows: number; error?: string | undefined };
+    techEvents: { ok: boolean; rows: number; error?: string | undefined };
   };
 }

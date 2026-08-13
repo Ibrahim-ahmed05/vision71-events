@@ -11,7 +11,7 @@ async function loadSheet(
   spreadsheetId: string,
   sheetName: string,
   source: "trade-show" | "tech-event",
-): Promise<{ events: NormalizedEvent[]; ok: boolean; error?: string }> {
+): Promise<{ events: NormalizedEvent[]; ok: boolean; error?: string | undefined }> {
   try {
     const res = await fetch(csvUrl(spreadsheetId, sheetName), {
       headers: { Accept: "text/csv" },
