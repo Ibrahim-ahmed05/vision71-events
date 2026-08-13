@@ -10,7 +10,7 @@ const STORAGE_KEY = "vision71.sheets.config";
 
 export function extractSpreadsheetId(input: string): string {
   const match = /\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/.exec(input.trim());
-  return match ? match[1] : input.trim();
+  return match?.[1] ?? input.trim();
 }
 
 export function readSheetsConfig(): SheetsConfig {

@@ -29,6 +29,9 @@ const MONTHS: Record<string, number> = {
 
 const MONTH_RE = Object.keys(MONTHS).sort((a, b) => b.length - a.length).join("|");
 
+const M = (k?: string): number => MONTHS[(k ?? "").toLowerCase()] ?? 0;
+const N = (v?: string): number => Number(v ?? 0);
+
 function iso(y: number, m: number, d: number): string {
   const max = new Date(Date.UTC(y, m + 1, 0)).getUTCDate();
   const day = Math.min(Math.max(d, 1), max);
@@ -56,7 +59,7 @@ export function parseEventDate(input: string | undefined | null): {
   if (!s || /^(tba|tbd|n\/?a|-)$/i.test(s)) return { start: null, end: null };
 
   const yearMatch = s.match(/\b(20\d{2})\b/);
-  const fallbackYear = yearMatch ? Number(yearMatch[1]) : null;
+  const fallbackYear = yearMatch ? N(yearMatch[1]) : null;
 
   // Pattern A: "31 July - 2 August 2026" | "31 July - 2 August"
   const a = new RegExp(
@@ -64,50 +67,50 @@ export function parseEventDate(input: string | undefined | null): {
     "i",
   ).exec(s);
   if (a) {
-    const y = a[5] ? Number(a[5]) : inferYear(MONTHS[a[2].toLowerCase()], Number(a[1]), fallbackYear);
-    const y2 = MONTHS[a[4].toLowerCase()] < MONTHS[a[2].toLowerCase()] ? y + 1 : y;
+    const y = a[5] ? N(a[5]) : inferYear(M(a[2]), N(a[1]), fallbackYear);
+    const y2 = M(a[4]) < M(a[2]) ? y + 1 : y;
     return {
-      start: iso(y, MONTHS[a[2].toLowerCase()], Number(a[1])),
-      end: iso(y2, MONTHS[a[4].toLowerCase()], Number(a[3])),
+      start: iso(y, M(a[2]), N(a[1])),
+      end: iso(y2, M(a[4]), N(a[3])),
     };
   }
 
   // Pattern B: "22-24 Sept 2026" | "22 - 24 September"
   const b = new RegExp(`\\b(\\d{1,2})\\s*-\\s*(\\d{1,2})\\s*(${MONTH_RE})\\.?\\s*(20\\d{2})?`, "i").exec(s);
   if (b) {
-    const m = MONTHS[b[3].toLowerCase()];
-    const y = b[4] ? Number(b[4]) : inferYear(m, Number(b[1]), fallbackYear);
-    return { start: iso(y, m, Number(b[1])), end: iso(y, m, Number(b[2])) };
+    const m = M(b[3]);
+    const y = b[4] ? N(b[4]) : inferYear(m, N(b[1]), fallbackYear);
+    return { start: iso(y, m, N(b[1])), end: iso(y, m, N(b[2])) };
   }
 
   // Pattern C: "Sept 22-24, 2026"
   const c = new RegExp(`\\b(${MONTH_RE})\\.?\\s*(\\d{1,2})\\s*-\\s*(\\d{1,2}),?\\s*(20\\d{2})?`, "i").exec(s);
   if (c) {
-    const m = MONTHS[c[1].toLowerCase()];
-    const y = c[4] ? Number(c[4]) : inferYear(m, Number(c[2]), fallbackYear);
-    return { start: iso(y, m, Number(c[2])), end: iso(y, m, Number(c[3])) };
+    const m = M(c[1]);
+    const y = c[4] ? N(c[4]) : inferYear(m, N(c[2]), fallbackYear);
+    return { start: iso(y, m, N(c[2])), end: iso(y, m, N(c[3])) };
   }
 
   // Pattern D: single day "28 July 2026" / "July 28, 2026"
   const d1 = new RegExp(`\\b(\\d{1,2})\\s*(${MONTH_RE})\\.?\\s*(20\\d{2})?`, "i").exec(s);
   if (d1) {
-    const m = MONTHS[d1[2].toLowerCase()];
-    const y = d1[3] ? Number(d1[3]) : inferYear(m, Number(d1[1]), fallbackYear);
-    const v = iso(y, m, Number(d1[1]));
+    const m = M(d1[2]);
+    const y = d1[3] ? N(d1[3]) : inferYear(m, N(d1[1]), fallbackYear);
+    const v = iso(y, m, N(d1[1]));
     return { start: v, end: v };
   }
   const d2 = new RegExp(`\\b(${MONTH_RE})\\.?\\s*(\\d{1,2}),?\\s*(20\\d{2})?`, "i").exec(s);
   if (d2) {
-    const m = MONTHS[d2[1].toLowerCase()];
-    const y = d2[3] ? Number(d2[3]) : inferYear(m, Number(d2[2]), fallbackYear);
-    const v = iso(y, m, Number(d2[2]));
+    const m = M(d2[1]);
+    const y = d2[3] ? N(d2[3]) : inferYear(m, N(d2[2]), fallbackYear);
+    const v = iso(y, m, N(d2[2]));
     return { start: v, end: v };
   }
 
   // Pattern E: ISO or numeric
   const e = /\b(20\d{2})[-/](\d{1,2})[-/](\d{1,2})\b/.exec(s);
   if (e) {
-    const v = iso(Number(e[1]), Number(e[2]) - 1, Number(e[3]));
+    const v = iso(N(e[1]), N(e[2]) - 1, N(e[3]));
     return { start: v, end: v };
   }
 
@@ -139,14 +142,18 @@ export function eventStatus(event: NormalizedEvent, today: string): EventStatus 
 
 const FMT_MONTH = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
+const mon = (m: number): string => FMT_MONTH[m - 1] ?? "";
+
 export function formatRange(start: string | null, end: string | null, fallback: string): string {
   if (!start) return fallback?.trim() || "Date to be announced";
-  const [sy, sm, sd] = start.split("-").map(Number);
-  if (!end || end === start) return `${sd} ${FMT_MONTH[sm - 1]} ${sy}`;
-  const [ey, em, ed] = end.split("-").map(Number);
-  if (sy === ey && sm === em) return `${sd}–${ed} ${FMT_MONTH[sm - 1]} ${sy}`;
-  if (sy === ey) return `${sd} ${FMT_MONTH[sm - 1]} – ${ed} ${FMT_MONTH[em - 1]} ${sy}`;
-  return `${sd} ${FMT_MONTH[sm - 1]} ${sy} – ${ed} ${FMT_MONTH[em - 1]} ${ey}`;
+  const sp = start.split("-").map(Number);
+  const sy = sp[0] ?? 0, sm = sp[1] ?? 1, sd = sp[2] ?? 1;
+  if (!end || end === start) return `${sd} ${mon(sm)} ${sy}`;
+  const ep = end.split("-").map(Number);
+  const ey = ep[0] ?? 0, em = ep[1] ?? 1, ed = ep[2] ?? 1;
+  if (sy === ey && sm === em) return `${sd}–${ed} ${mon(sm)} ${sy}`;
+  if (sy === ey) return `${sd} ${mon(sm)} – ${ed} ${mon(em)} ${sy}`;
+  return `${sd} ${mon(sm)} ${sy} – ${ed} ${mon(em)} ${ey}`;
 }
 
 export function daysUntil(startIso: string, today: string): number {
