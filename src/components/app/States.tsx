@@ -3,17 +3,34 @@ import { Button } from "@/components/ui/button";
 
 export function LoadingSkeleton({ count = 6 }: { count?: number }) {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 w-full">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="card-surface animate-shimmer p-5" style={{ animationDelay: `${i * 80}ms` }}>
-          <div className="h-3 w-20 rounded-full bg-muted" />
-          <div className="mt-4 h-4 w-3/4 rounded-full bg-muted" />
-          <div className="mt-2 h-4 w-1/2 rounded-full bg-muted" />
-          <div className="mt-6 space-y-2">
+        <div key={i} className="card-surface animate-shimmer p-4 flex flex-col gap-3">
+          <div className="space-y-1">
+            <div className="h-4 w-3/4 rounded-full bg-muted" />
+            <div className="h-3 w-1/2 rounded-full bg-muted" />
+          </div>
+          <div className="space-y-1">
             <div className="h-3 w-2/3 rounded-full bg-muted" />
             <div className="h-3 w-1/2 rounded-full bg-muted" />
           </div>
-          <div className="mt-6 h-3 w-24 rounded-full bg-muted" />
+          <div className="border-y border-border py-2 space-y-1">
+            <div className="h-3 w-20 rounded-full bg-muted" />
+            <div className="h-3 w-3/4 rounded-full bg-muted" />
+          </div>
+          <div className="space-y-1">
+            <div className="h-2 w-20 rounded-full bg-muted" />
+            <div className="h-2 w-24 rounded-full bg-muted" />
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="h-3 w-16 rounded-full bg-muted" />
+            <div className="h-3 w-20 rounded-full bg-muted" />
+          </div>
+          <div className="flex-1" />
+          <div className="flex items-center justify-between">
+            <div className="h-3 w-20 rounded-full bg-muted" />
+            <div className="size-4 rounded-full bg-muted" />
+          </div>
         </div>
       ))}
     </div>

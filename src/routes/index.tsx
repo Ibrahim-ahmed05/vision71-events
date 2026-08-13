@@ -1,24 +1,96 @@
+import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
+import { PageHeader } from "@/components/app/AppShell";
+import { MetricSummary } from "@/components/app/MetricSummary";
+import { SyncStatus } from "@/components/app/SyncStatus";
+import { ErrorState, EmptyState } from "@/components/app/States";
+import { EventGrid } from "@/components/events/EventGrid";
+import { EventDetail } from "@/components/events/EventDetail";
+import { useEventsData } from "@/lib/events/useEvents";
+import { computeMetrics, buildInsights } from "@/lib/events/derive";
+import type { NormalizedEvent } from "@/lib/events/types";
+import { Button } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Overview,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Overview() {
+  const { data, isLoading, isError, error, refresh, events, today } = useEventsData();
+  const [selectedEvent, setSelectedEvent] = useState<NormalizedEvent | null>(null);
+  const [detailOpen, setDetailOpen] = useState(false);
+
+  const metrics = computeMetrics(events, today);
+  const insights = buildInsights(events, today);
+
+  const handleEventClick = (event: NormalizedEvent) => {
+    setSelectedEvent(event);
+    setDetailOpen(true);
+  };
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+    <>
+      <PageHeader
+        title="Event Intelligence"
+        subtitle="Real-time visibility across tech events and trade shows in Pakistan. Track opportunities, assess relevance, and plan your participation strategy."
+        right={data && <SyncStatus fetchedAt={data.fetchedAt} onRefresh={refresh} />}
       />
-    </div>
+
+      {isError && (
+        <ErrorState onRetry={refresh} />
+      )}
+
+      {!isError && (
+        <div className="space-y-8">
+          {/* Metrics */}
+          <MetricSummary
+            metrics={[
+              { label: "Upcoming", value: metrics.upcoming },
+              { label: "This Month", value: metrics.thisMonth },
+              { label: "Trade Shows", value: metrics.tradeShows },
+              { label: "Tech Events", value: metrics.techEvents },
+              { label: "High Relevance", value: metrics.highRelevance },
+              { label: "Cities", value: metrics.cities },
+            ]}
+          />
+
+          {/* Insights */}
+          {insights.length > 0 && (
+            <div className="rounded-xl border border-border bg-accent/20 px-6 py-4">
+              <h3 className="mb-3 text-sm font-semibold text-foreground">Executive Insights</h3>
+              <ul className="space-y-2">
+                {insights.map((insight, i) => (
+                  <li key={i} className="flex gap-3 text-sm leading-relaxed text-foreground">
+                    <span className="mt-1 inline-block size-1.5 rounded-full bg-primary flex-shrink-0" />
+                    <span>{insight}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Events Grid */}
+          <div>
+            <h2 className="mb-4 text-lg font-semibold">All Events</h2>
+            <EventGrid
+              events={events}
+              isLoading={isLoading}
+              today={today}
+              onEventClick={handleEventClick}
+              showFilters
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Detail Drawer */}
+      <EventDetail
+        event={selectedEvent}
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        today={today}
+      />
+    </>
   );
 }

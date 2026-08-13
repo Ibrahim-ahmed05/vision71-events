@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SourcesRouteImport } from './routes/sources'
+import { Route as TechEventsRouteImport } from './routes/tech-events'
+import { Route as TradeShowsRouteImport } from './routes/trade-shows'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SourcesRoute = SourcesRouteImport.update({
+  id: '/sources',
+  path: '/sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TechEventsRoute = TechEventsRouteImport.update({
+  id: '/tech-events',
+  path: '/tech-events',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TradeShowsRoute = TradeShowsRouteImport.update({
+  id: '/trade-shows',
+  path: '/trade-shows',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/calendar': typeof CalendarRoute
+  '/settings': typeof SettingsRoute
+  '/sources': typeof SourcesRoute
+  '/tech-events': typeof TechEventsRoute
+  '/trade-shows': typeof TradeShowsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/calendar': typeof CalendarRoute
+  '/settings': typeof SettingsRoute
+  '/sources': typeof SourcesRoute
+  '/tech-events': typeof TechEventsRoute
+  '/trade-shows': typeof TradeShowsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
+  '/calendar': typeof CalendarRoute
+  '/settings': typeof SettingsRoute
+  '/sources': typeof SourcesRoute
+  '/tech-events': typeof TechEventsRoute
+  '/trade-shows': typeof TradeShowsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/calendar'
+    | '/settings'
+    | '/sources'
+    | '/tech-events'
+    | '/trade-shows'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/analytics'
+    | '/calendar'
+    | '/settings'
+    | '/sources'
+    | '/tech-events'
+    | '/trade-shows'
+  id:
+    | '__root__'
+    | '/'
+    | '/analytics'
+    | '/calendar'
+    | '/settings'
+    | '/sources'
+    | '/tech-events'
+    | '/trade-shows'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
+  CalendarRoute: typeof CalendarRoute
+  SettingsRoute: typeof SettingsRoute
+  SourcesRoute: typeof SourcesRoute
+  TechEventsRoute: typeof TechEventsRoute
+  TradeShowsRoute: typeof TradeShowsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sources': {
+      id: '/sources'
+      path: '/sources'
+      fullPath: '/sources'
+      preLoaderRoute: typeof SourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tech-events': {
+      id: '/tech-events'
+      path: '/tech-events'
+      fullPath: '/tech-events'
+      preLoaderRoute: typeof TechEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trade-shows': {
+      id: '/trade-shows'
+      path: '/trade-shows'
+      fullPath: '/trade-shows'
+      preLoaderRoute: typeof TradeShowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
+  CalendarRoute: CalendarRoute,
+  SettingsRoute: SettingsRoute,
+  SourcesRoute: SourcesRoute,
+  TechEventsRoute: TechEventsRoute,
+  TradeShowsRoute: TradeShowsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
