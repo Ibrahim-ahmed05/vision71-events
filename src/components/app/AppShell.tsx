@@ -7,6 +7,8 @@ import {
   Link2,
   Settings,
   Store,
+  Bell,
+  Search,
 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -33,44 +35,44 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-border bg-sidebar px-4 py-6 lg:flex">
-        <Brand />
-        <nav className="mt-8 flex flex-1 flex-col gap-0.5">
+      <header className="sticky top-0 z-40 border-b border-border/80 bg-background/88 backdrop-blur-2xl">
+        <div className="mx-auto flex h-[72px] max-w-[1480px] items-center gap-5 px-5 sm:px-8 lg:px-10">
+          <Brand />
+          <div className="hidden h-6 w-px bg-border xl:block" />
+          <nav className="hidden min-w-0 flex-1 items-center gap-1 lg:flex">
           {NAV.map((item) => (
-            <SidebarLink key={item.to} item={item} active={isActive(pathname, item.to)} />
+              <TopNavLink key={item.to} item={item} active={isActive(pathname, item.to)} />
           ))}
-        </nav>
-        <p className="px-3 text-[11px] leading-relaxed text-subtle">
-          Vision71 Technologies
-          <br />
-          Internal intelligence platform
-        </p>
-      </aside>
-
-      <div className="lg:pl-60">
-        <main className="mx-auto w-full max-w-[1400px] px-5 pb-28 pt-8 sm:px-8 lg:pb-16 lg:pt-12">
-          {children}
-        </main>
-      </div>
-
-      <nav className="fixed inset-x-0 bottom-0 z-30 flex items-stretch gap-1 border-t border-border bg-card/85 px-2 py-2 backdrop-blur-xl lg:hidden">
-        {NAV.slice(0, 5).map((item) => {
+          </nav>
+          <div className="ml-auto flex items-center gap-2">
+            <button aria-label="Search" className="hidden size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-card transition hover:text-foreground sm:flex"><Search className="size-4" /></button>
+            <button aria-label="Notifications" className="hidden size-9 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-card transition hover:text-foreground sm:flex"><Bell className="size-4" /></button>
+            <div className="flex size-9 items-center justify-center rounded-full bg-foreground text-[11px] font-semibold text-background">V71</div>
+          </div>
+        </div>
+        <nav className="mx-auto flex max-w-[1480px] gap-1 overflow-x-auto px-5 pb-2 sm:px-8 lg:hidden">
+          {NAV.map((item) => {
           const active = isActive(pathname, item.to);
           return (
             <Link
               key={item.to}
               to={item.to}
               className={cn(
-                "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[10px] font-medium transition-colors",
-                active ? "text-primary" : "text-muted-foreground",
+                  "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition-colors",
+                  active ? "bg-foreground text-background" : "text-muted-foreground hover:bg-card hover:text-foreground",
               )}
             >
-              <item.icon className="size-[18px]" />
-              {item.short}
+                <item.icon className="size-3.5" />
+                {item.label}
             </Link>
           );
         })}
-      </nav>
+        </nav>
+      </header>
+
+      <main className="mx-auto w-full max-w-[1480px] px-5 pb-20 pt-8 sm:px-8 lg:px-10 lg:pt-11">
+        {children}
+      </main>
     </div>
   );
 }
@@ -79,18 +81,18 @@ function isActive(pathname: string, to: string): boolean {
   return to === "/" ? pathname === "/" : pathname.startsWith(to);
 }
 
-function SidebarLink({ item, active }: { item: NavItem; active: boolean }) {
+function TopNavLink({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link
       to={item.to}
       className={cn(
-        "group flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition-all duration-200",
+        "group flex items-center gap-2 rounded-full px-3 py-2 text-[12px] font-medium transition-all duration-200",
         active
-          ? "bg-sidebar-accent text-sidebar-accent-foreground"
-          : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
+          ? "bg-foreground text-background shadow-sm"
+          : "text-muted-foreground hover:bg-card hover:text-foreground",
       )}
     >
-      <item.icon className={cn("size-4 transition-colors", active ? "text-primary" : "text-subtle")} />
+      <item.icon className={cn("size-3.5 transition-colors", active ? "text-primary" : "text-subtle")} />
       {item.label}
     </Link>
   );
@@ -98,14 +100,9 @@ function SidebarLink({ item, active }: { item: NavItem; active: boolean }) {
 
 function Brand() {
   return (
-    <Link to="/" className="flex items-center gap-3 px-3">
-      <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-[13px] font-semibold text-primary-foreground">
-        V7
-      </span>
-      <span className="leading-tight">
-        <span className="block text-[13px] font-semibold tracking-tight">Event Intelligence</span>
-        <span className="block text-[11px] text-subtle">Vision71 Technologies</span>
-      </span>
+    <Link to="/" className="flex shrink-0 items-center gap-3 rounded-xl">
+      <img src="/vision71-logo.png" alt="Vision71 Technologies" className="h-auto w-[124px] mix-blend-multiply sm:w-[142px]" />
+      <span className="hidden text-[9px] font-semibold uppercase leading-tight tracking-[0.15em] text-subtle 2xl:block">Event<br />intelligence</span>
     </Link>
   );
 }
@@ -120,16 +117,18 @@ export function PageHeader({
   right?: ReactNode;
 }) {
   return (
-    <header className="flex flex-col gap-4 pb-8 sm:flex-row sm:items-end sm:justify-between">
+    <header className="relative mb-8 overflow-hidden rounded-[28px] border border-border bg-card px-6 py-8 shadow-card sm:flex sm:items-end sm:justify-between sm:gap-8 sm:px-9 sm:py-10">
+      <div className="pointer-events-none absolute -right-16 -top-24 size-72 rounded-full bg-primary/10 blur-3xl" />
       <div>
-        <h1 className="text-balance-tight text-3xl font-semibold sm:text-[40px] sm:leading-[1.05]">
+        <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">Vision71 / Intelligence</p>
+        <h1 className="text-balance-tight text-3xl font-semibold tracking-[-0.04em] sm:text-[44px] sm:leading-[1.02]">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{subtitle}</p>
         ) : null}
       </div>
-      {right ? <div className="shrink-0">{right}</div> : null}
+      {right ? <div className="relative mt-5 shrink-0 sm:mt-0">{right}</div> : null}
     </header>
   );
 }

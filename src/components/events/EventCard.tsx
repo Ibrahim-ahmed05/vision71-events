@@ -20,13 +20,13 @@ export function EventCard({ event, onClick, today }: EventCardProps) {
     <button
       onClick={onClick}
       className={cn(
-        "group card-surface w-full flex flex-col gap-3 p-4 text-left transition-all duration-200",
-        "hover:shadow-lift hover:bg-accent/40 active:scale-[0.98]",
+        "group card-surface w-full flex flex-col gap-4 p-5 text-left transition-all duration-300",
+        "hover:-translate-y-0.5 hover:border-border-strong hover:shadow-lift active:scale-[0.99]",
       )}
     >
       {/* Header: Name + Source */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="flex-1 text-[13px] font-semibold leading-snug tracking-tight text-foreground line-clamp-2">
+        <h3 className="flex-1 text-[15px] font-semibold leading-snug tracking-tight text-foreground line-clamp-2">
           {event.name}
         </h3>
         <div className="flex-shrink-0">
@@ -46,7 +46,7 @@ export function EventCard({ event, onClick, today }: EventCardProps) {
       </div>
 
       {/* Category + Organizer */}
-      <div className="space-y-1 border-y border-border py-2">
+      <div className="space-y-1 border-y border-border py-3">
         <p className="text-[10px] font-medium uppercase tracking-[0.06em] text-subtle">
           {event.category}
         </p>

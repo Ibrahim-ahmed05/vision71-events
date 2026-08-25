@@ -10,7 +10,7 @@ import { useEventsData } from "@/lib/events/useEvents";
 import { computeMetrics, buildInsights } from "@/lib/events/derive";
 import type { NormalizedEvent } from "@/lib/events/types";
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: Overview,
@@ -33,7 +33,7 @@ function Overview() {
     <>
       <PageHeader
         title="Event Intelligence"
-        subtitle="Real-time visibility across tech events and trade shows in Pakistan. Track opportunities, assess relevance, and plan your participation strategy."
+        subtitle="A focused view of Pakistan's technology and trade landscape—built to help your team spot the right opportunities and move early."
         right={data && <SyncStatus fetchedAt={data.fetchedAt} onRefresh={refresh} />}
       />
 
@@ -42,7 +42,7 @@ function Overview() {
       )}
 
       {!isError && (
-        <div className="space-y-8">
+        <div className="space-y-10">
           {/* Metrics */}
           <MetricSummary
             metrics={[
@@ -57,12 +57,16 @@ function Overview() {
 
           {/* Insights */}
           {insights.length > 0 && (
-            <div className="rounded-xl border border-border bg-accent/20 px-6 py-4">
-              <h3 className="mb-3 text-sm font-semibold text-foreground">Executive Insights</h3>
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-[linear-gradient(120deg,var(--color-card),var(--color-accent))] px-6 py-5 shadow-card sm:px-7">
+              <div className="absolute -right-8 -top-12 size-40 rounded-full bg-primary/5 blur-2xl" />
+              <div className="relative flex items-center justify-between gap-4">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground"><Sparkles className="size-4 text-primary" /> Executive brief</h3>
+                <ArrowUpRight className="size-4 text-subtle" />
+              </div>
               <ul className="space-y-2">
                 {insights.map((insight, i) => (
                   <li key={i} className="flex gap-3 text-sm leading-relaxed text-foreground">
-                    <span className="mt-1 inline-block size-1.5 rounded-full bg-primary flex-shrink-0" />
+                    <span className="mt-1.5 inline-block size-1.5 rounded-full bg-primary flex-shrink-0" />
                     <span>{insight}</span>
                   </li>
                 ))}
@@ -72,7 +76,9 @@ function Overview() {
 
           {/* Events Grid */}
           <div>
-            <h2 className="mb-4 text-lg font-semibold">All Events</h2>
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div><p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-subtle">Opportunity pipeline</p><h2 className="mt-1 text-xl font-semibold">All events</h2></div>
+            </div>
             <EventGrid
               events={events}
               isLoading={isLoading}
