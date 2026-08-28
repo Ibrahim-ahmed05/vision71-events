@@ -7,11 +7,12 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 import netlify from "@netlify/vite-plugin-tanstack-start";
 
+const isNetlifyBuild = process.env["NETLIFY"] === "true";
+
 export default defineConfig({
-  // Netlify's adapter owns the production server/function output. Disable the
-  // wrapper's default Cloudflare-targeted Nitro build to avoid duplicate outputs.
-  nitro: false,
-  plugins: [netlify()],
+  // Netlify's adapter owns the production server/function output when running
+  // in Netlify CI. Local/Lovable builds keep their normal Nitro configuration.
+  ...(isNetlifyBuild ? { nitro: false as const, plugins: netlify() } : {}),
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

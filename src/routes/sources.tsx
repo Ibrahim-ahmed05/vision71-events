@@ -14,9 +14,7 @@ export const Route = createFileRoute("/sources")({
 function Sources() {
   const { data, isError, refresh, events, today } = useEventsData();
 
-  const sourceCount = countBy(events, (e) =>
-    e.sources.length > 0 ? new URL(e.sources[0]).hostname : "Unknown"
-  );
+  const sourceCount = countBy(events, (e) => safeHostname(e.sources[0]));
 
   const organizerCount = countBy(events, (e) => e.organizer);
   const cityCount = countBy(events, (e) => e.city);
@@ -38,10 +36,7 @@ function Sources() {
             <h2 className="mb-4 text-lg font-semibold">Top Organizers</h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {organizerCount.slice(0, 12).map((item) => (
-                <Card
-                  key={item.label}
-                  className="flex items-center justify-between px-4 py-3"
-                >
+                <Card key={item.label} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-foreground">{item.label}</p>
                     <p className="text-xs text-muted-foreground">{item.value} events</p>
@@ -57,10 +52,7 @@ function Sources() {
             <h2 className="mb-4 text-lg font-semibold">Geographic Distribution</h2>
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
               {cityCount.map((item) => (
-                <Card
-                  key={item.label}
-                  className="flex items-center justify-between px-4 py-3"
-                >
+                <Card key={item.label} className="flex items-center justify-between px-4 py-3">
                   <div>
                     <p className="text-sm font-medium text-foreground">{item.label}</p>
                     <p className="text-xs text-muted-foreground">{item.value} events</p>
@@ -115,7 +107,9 @@ function Sources() {
                 <p className="text-xs font-medium uppercase tracking-[0.08em] text-subtle">
                   Unique Organizers
                 </p>
-                <p className="mt-2 text-2xl font-semibold text-foreground">{organizerCount.length}</p>
+                <p className="mt-2 text-2xl font-semibold text-foreground">
+                  {organizerCount.length}
+                </p>
               </div>
             </div>
           </section>
@@ -123,4 +117,13 @@ function Sources() {
       )}
     </>
   );
+}
+
+function safeHostname(source: string | undefined): string {
+  if (!source) return "Unknown";
+  try {
+    return new URL(source).hostname || "Unknown";
+  } catch {
+    return "Unknown";
+  }
 }

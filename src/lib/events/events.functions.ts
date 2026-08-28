@@ -9,5 +9,5 @@ const configSchema = z.object({
 });
 
 export const fetchEvents = createServerFn({ method: "GET" })
-  .inputValidator((data: unknown) => configSchema.parse(data))
+  .validator((data: unknown) => configSchema.parse(data))
   .handler(async ({ data }) => loadEvents(data));

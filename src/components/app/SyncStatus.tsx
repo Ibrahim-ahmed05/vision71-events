@@ -4,14 +4,14 @@ import { cn } from "@/lib/utils";
 
 export function SyncStatus({
   fetchedAt,
-  isFetching,
+  isFetching = false,
   onRefresh,
-  ok,
+  ok = true,
 }: {
   fetchedAt?: string | undefined;
-  isFetching: boolean;
+  isFetching?: boolean;
   onRefresh: () => void;
-  ok: boolean;
+  ok?: boolean;
 }) {
   return (
     <div className="flex items-center gap-3">
